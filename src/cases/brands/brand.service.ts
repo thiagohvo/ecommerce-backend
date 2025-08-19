@@ -1,25 +1,25 @@
 import { promises } from "dns";
-import { Category } from "./category.entity";
+import { Brand } from "./brand.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class CategoryService {
+export class BrandService {
   constructor(
-    @InjectRepository(Category)
-    private repository: Repository<Category>
+    @InjectRepository(Brand)
+    private repository: Repository<Brand>
   ) {}
 
-  findAll(): Promise<Category[]> {
+  findAll(): Promise<Brand[]> {
     return this.repository.find();
   }
 
-  findById(id: string): Promise<Category | null> {
+  findById(id: string): Promise<Brand | null> {
     return this.repository.findOneBy({ id });
   }
 
-  save(category: Category): Promise<Category> {
+  save(category: Brand): Promise<Brand> {
     return this.repository.save(category);
   }
 
@@ -27,7 +27,7 @@ export class CategoryService {
     const result = await this.repository.delete(id);
 
     if (result.affected === 0) {
-      throw new NotFoundException(`Category with ID "${id}" not found`);
+      throw new NotFoundException(`Brand with ID "${id}" not found`);
     }
   }
 }
