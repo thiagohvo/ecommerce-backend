@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CategoryModule } from './cases/categories/category.module';
 import { BrandModule } from './cases/brands/brand.module';
 import { ProductModule } from './cases/products/product.module';
+import { CityModule } from './cases/cities/city.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { ProductModule } from './cases/products/product.module';
     CategoryModule,
     BrandModule,
     ProductModule,
+    CityModule,
   ],
 })
 export class AppModule {}
