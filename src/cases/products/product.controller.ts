@@ -3,26 +3,32 @@ import { Product } from "./product.entity";
 import { ProductService } from "./product.service";
 import { CategoryService } from "../categories/category.service";
 
-
 @Controller('products')
 export class ProductController {
   constructor(
     private readonly categoryService: CategoryService,
-    private readonly Service: ProductService
+    private readonly productService: ProductService // 🔧 antes era "Service"
   ) {}
 
   @Get()
-  async findAll(@Query('categoryId', ParseUUIDPipe) categoryId?: string): Promise<Product[]> {
-    if (categoryId) {
-      const category = await this.categoryService.findById(categoryId);
-      return this.productService.findAll(category);
+async findAll(@Query('categoryId', ParseUUIDPipe) categoryId?: string): Promise<Product[]> {
+  if (categoryId) {
+    const category = await this.categoryService.findById(categoryId);
+
+    if (!category) {
+      throw new HttpException('Category not found', HttpStatus.NOT_FOUND);
     }
-    return this.service.findAll();
+
+    return this.productService.findAll(category);
   }
+
+  return this.productService.findAll();
+}
+
 
   @Get(':id')
   async findById(@Param('id', ParseUUIDPipe) id: string): Promise<Product> {
-    const found = await this.service.findById(id);
+    const found = await this.productService.findById(id); // 🔧 corrigido
 
     if (!found) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
@@ -33,7 +39,7 @@ export class ProductController {
 
   @Post()
   create(@Body() product: Product): Promise<Product> {
-    return this.service.save(product);
+    return this.productService.save(product); // 🔧 corrigido
   }
 
   @Put(':id')
@@ -41,7 +47,7 @@ export class ProductController {
     @Param('id', ParseUUIDPipe) id: string, 
     @Body() product: Product
   ): Promise<Product> {
-    const found = await this.service.findById(id);
+    const found = await this.productService.findById(id); // 🔧 corrigido
 
     if (!found) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
@@ -49,18 +55,18 @@ export class ProductController {
 
     product.id = id;
 
-    return this.service.save(product);
+    return this.productService.save(product); // 🔧 corrigido
   }
   
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    const found = await this.service.findById(id);
+    const found = await this.productService.findById(id); // 🔧 corrigido
 
     if (!found) {
       throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
 
-    await this.service.remove(id);
+    await this.productService.remove(id); // 🔧 corrigido
   }
 }
