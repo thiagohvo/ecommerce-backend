@@ -1,53 +1,37 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-
 import { CategoryModule } from './cases/categories/category.module';
 import { BrandModule } from './cases/brands/brand.module';
 import { ProductModule } from './cases/products/product.module';
+import { ConfigModule } from '@nestjs/config';
 import { CityModule } from './cases/cities/city.module';
+import { CustomerModule } from './cases/customers/customer.module';
+import { OrderModule } from './cases/orders/order.module';
 
-@Module({
+@Module ({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => {
-        console.log('Tentando conectar em:', configService.get('DB_HOST'));
-        
-        return {
-          type: configService.get<'postgres'>('DB_TYPE'),
-          host: configService.get<string>('DB_HOST'),
-          port: Number(configService.get<number>('DB_PORT')),
-          username: configService.get<string>('DB_USERNAME'),
-          password: configService.get<string>('DB_PASSWORD'),
-          database: configService.get<string>('DB_DATABASE'),
-          autoLoadEntities: true,
-          synchronize: true,
-         
-          ssl: configService.get('DB_SSL') === 'true' ? {
-            rejectUnauthorized: false,
-           
-          } : false,
-         
-          extra: {
-            ssl: configService.get('DB_SSL') === 'true' ? {
-              rejectUnauthorized: false,
-            } : false,
-          },
-        
-          poolSize: 10,
-          connectionTimeoutMillis: 10000,
-          idleTimeoutMillis: 30000,
-        };
-      },
+    ConfigModule.forRoot({
+      isGlobal: true
     }),
-    CategoryModule,
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT as unknown as number,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      synchronize: true, 
+      // ^pega tudo que tem no modelo de entidade que foi carregado atrás do autoLoadEntities
+      // e replica no banco SÓ DA PRA USAR EM DESENVOLVIMENTO, N CONECTA EM PRODUÇÃO COM SYNCHRONIZE TRUE   
+    }),
+    CategoryModule, 
     BrandModule,
     ProductModule,
     CityModule,
+    CustomerModule,
+    OrderModule
   ],
 })
+
 export class AppModule {}
